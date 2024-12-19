@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, Menu, shell } from 'electron'
 import path from 'path'
 import { updateAppleNotesAccounts } from '@/lib/utils'
-import { getObsidianClientID, getUserAuthToken, ReadwiseSync } from '@/lib'
+import { getAppleNoteClientID, getUserAuthToken, ReadwiseSync } from '@/lib'
 import { store } from '@/lib/store'
 import { updateElectronApp } from 'update-electron-app'
 
@@ -38,39 +38,39 @@ const createWindow = () => {
     {
       label: 'User Guide',
       click: async () => {
-        shell.openExternal('https://github.com/Scarvy/apple-notes-readwise/wiki/User-Guide');
-      },
+        shell.openExternal('https://github.com/Scarvy/apple-notes-readwise/wiki/User-Guide')
+      }
     },
     {
       label: 'Report an Issue',
       click: async () => {
-        shell.openExternal('https://github.com/Scarvy/apple-notes-readwise/issues');
-      },
+        shell.openExternal('https://github.com/Scarvy/apple-notes-readwise/issues')
+      }
     },
     {
       label: 'Check latest release',
       click: async () => {
-        shell.openExternal('https://github.com/Scarvy/apple-notes-readwise/releases');
-      },
+        shell.openExternal('https://github.com/Scarvy/apple-notes-readwise/releases')
+      }
     },
     {
       label: 'Permission Issues?',
       click: async () => {
         shell.openExternal(
           'https://scottsplace.notion.site/Apple-Notes-Readwise-Export-Fixing-permission-issues-14474debfabc805e8701f8534d1854a8?pvs=4'
-        );
-      },
+        )
+      }
     },
     {
       label: 'Contact Developer',
       click: async () => {
-        shell.openExternal('mailto:scottcarvalho71@gmail.com');
-      },
-    },
-  ];
-  
-  const defaultMenu = Menu.getApplicationMenu();
-  
+        shell.openExternal('mailto:scottcarvalho71@gmail.com')
+      }
+    }
+  ]
+
+  const defaultMenu = Menu.getApplicationMenu()
+
   if (defaultMenu) {
     // Clone existing menu items
     const menuTemplate = defaultMenu.items.map((item) => {
@@ -80,25 +80,22 @@ const createWindow = () => {
           ...item,
           submenu: Menu.buildFromTemplate([
             ...(item.submenu ? item.submenu.items : []), // Preserve existing Help submenu items
-            ...customMenuItems, // Add custom Help submenu items
-          ]),
-        };
-        return updatedHelpMenu;
+            ...customMenuItems // Add custom Help submenu items
+          ])
+        }
+        return updatedHelpMenu
       }
-      return item; // Return other menu items unchanged
-    });
-  
+      return item // Return other menu items unchanged
+    })
+
     // Set the updated menu
-    const menu = Menu.buildFromTemplate(menuTemplate);
-    Menu.setApplicationMenu(menu);
+    const menu = Menu.buildFromTemplate(menuTemplate)
+    Menu.setApplicationMenu(menu)
   } else {
     // Fallback: Create a new menu with only the custom Help menu
-    const menu = Menu.buildFromTemplate([
-      ...customMenuItems,
-    ]);
-    Menu.setApplicationMenu(menu);
+    const menu = Menu.buildFromTemplate([...customMenuItems])
+    Menu.setApplicationMenu(menu)
   }
-  
 
   // check if the user is authenticated
   const tokenExsits = Boolean(store.get('token'))
@@ -163,7 +160,15 @@ ipcMain.on('electron-store-set', async (_, key, value) => {
   store.set(key, value)
 })
 
-ipcMain.handle('sync-highlights', (_event, auto?: boolean) => {
+// Testing Apple Notes extraction
+// ipcMain.handle('connect-to-database', async () => {
+//   console.log('Connecting to Apple Notes database...')
+//   const name = 'Normal People'
+//   const appleNoteExtractor = new AppleNotesExtractor(mainWindow, true)
+//   appleNoteExtractor.extractNotesHTML(name, 'Readwise')
+// })
+
+ipcMain.handle('sync-highlights', async (_event, auto?: boolean) => {
   // if sync is already in progress, don't start another one
   if (Boolean(store.get('isSyncing'))) {
     mainWindow.webContents.send('toast:show', {
@@ -182,9 +187,9 @@ ipcMain.handle('sync-highlights', (_event, auto?: boolean) => {
 
 ipcMain.handle('connect-to-readwise', async (event: Electron.Event) => {
   event.preventDefault()
-  const uuid = getObsidianClientID()
+  const uuid = getAppleNoteClientID()
 
-  shell.openExternal(`https://readwise.io/api_auth?token=${uuid}&service=obsidian`)
+  shell.openExternal(`https://readwise.io/api_auth?token=${uuid}&service=apple-notes`)
 
   const token = await getUserAuthToken(uuid)
   if (token) {
@@ -202,7 +207,7 @@ ipcMain.handle('connect-to-readwise', async (event: Electron.Event) => {
 
 ipcMain.handle('open-custom-format-window', (event: Electron.Event) => {
   event.preventDefault()
-  shell.openExternal(`https://readwise.io/export/obsidian/preferences`)
+  shell.openExternal(`https://readwise.io/export/apple-notes/preferences`)
 })
 
 ipcMain.handle('fetch-apple-notes-accounts', async () => {

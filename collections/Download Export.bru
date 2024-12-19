@@ -5,16 +5,12 @@ meta {
 }
 
 get {
-  url: https://readwise.io/api/obsidian/init?parentPageDeleted=false
+  url: https://readwise.io/api/download_artifact/17678458
   body: none
   auth: none
 }
 
-query {
-  parentPageDeleted: false
-}
-
 headers {
   Authorization: Token {{token}}
-  Obsidian-Client: {{uuid}}
+  Client-ID: {{uuid}}
 }

@@ -5,16 +5,16 @@ meta {
 }
 
 get {
-  url: {{baseURL}}/api/get_export_status
+  url: {{baseURL}}/api/get_export_status?exportStatusId=17678458
   body: none
   auth: none
 }
 
 query {
-  exportStatusId: 
+  exportStatusId: 17678458
 }
 
 headers {
   Authorization: Token {{token}}
-  Obsidian-Client: {{uuid}}
+  Client-ID: {{uuid}}
 }

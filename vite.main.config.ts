@@ -14,7 +14,7 @@ export default defineConfig({
       entry: path.resolve(__dirname, 'src/main/index.ts'),
     },
     rollupOptions: {
-      external: ['electron'],
+      external: ['electron', 'better-sqlite3'],
     },
   },
   plugins: [],

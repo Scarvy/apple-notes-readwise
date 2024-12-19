@@ -239,6 +239,35 @@ export const updateExistingNote = async (
   return result === 'true'
 }
 
+export const appendToExistingNote = async (
+  content: string,
+  title: string,
+  folder: string,
+  account: string
+): Promise<boolean> => {
+  const cleanContent = sanitizeHTML(content) // Sanitize the content for AppleScript
+  const script = `
+      tell application "Notes"
+        set noteCreated to false
+        try
+            set theAccount to account "${account}" -- specify your account name here
+            set theFolder to folder "${folder}" of theAccount -- specify your folder name here
+            set targetNote to the first note in theFolder whose name is "${title}"
+            set noteTitle to name of targetNote
+            set body of targetNote to noteTitle & "<div><br></div>" & "${cleanContent}"
+            log "Note '" & "${title}" & "' updated in folder '" & folder & "' of " & account & " account."
+            set noteCreated to true
+        on error
+            log "Note '" & "${title}" & "' not found in folder '" & folder & "' of " & account & " account."
+            set noteCreated to false
+        end try
+        return noteCreated
+    end tell
+    `
+  const result = await executeAppleScript(script)
+  return result === 'true'
+}
+
 export const createNewNote = async (
   content: string,
   title: string,
