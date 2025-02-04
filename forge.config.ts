@@ -29,7 +29,13 @@ const config: ForgeConfig = {
     extendInfo: {
       "NSAppleEventsUsageDescription": "This app requires permission to access and interact with Apple Notes.",
       "NSSystemAdministrationUsageDescription": "This app requires full disk access to read and process your notes securely."
-    }
+    },
+    "protocols": [
+      {
+        "name": "Readwise to Apple Notes",
+        "schemes": ["readwise-apple-notes"]
+      }
+    ]
   },
   rebuildConfig: {},
   makers: [

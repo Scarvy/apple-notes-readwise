@@ -16,6 +16,14 @@ const menu = Menu.buildFromTemplate(template)
 let mainWindow: BrowserWindow
 let syncInterval: NodeJS.Timeout | null = null
 
+if (process.defaultApp) {
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient('readwise-apple-notes', process.execPath, [path.resolve(process.argv[1])])
+  } else {
+    app.setAsDefaultProtocolClient('readwise-apple-notes', process.execPath)
+  }
+}
+
 const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -111,6 +119,33 @@ app.on('ready', () => {
   Menu.setApplicationMenu(menu)
   createWindow()
 })
+
+app.on('open-url', async (_, url: string) => {
+  await app.whenReady();
+
+  console.log('Deep link received:', url);
+
+  try {
+    const parsedUrl = new URL(url);
+    const action = parsedUrl.host; // Extracts "open" or "sync"
+
+    if (!mainWindow || mainWindow.isDestroyed()) {
+      createWindow(); // Ensure the app window exists
+    } else {
+      mainWindow.focus();
+    }
+
+    // Handle actions directly in the main process
+    if (action === 'open') {
+      console.log('App opened via deep link');
+    } else {
+      console.error('Unknown deep link action:', action);
+    }
+
+  } catch (error) {
+    console.error('Invalid deep link:', url);
+  }
+});
 
 ipcMain.on('login-status', (event: Electron.Event, loggedIn: boolean) => {
   event.preventDefault()
